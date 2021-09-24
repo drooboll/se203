@@ -22,48 +22,19 @@ f:
 	@ Naked Function: prologue and epilogue provided by programmer.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L4
-	ldr	r2, [r3]
-	mov	r3, #0
+	mov	r4, #0
+	ldr	r5, .L4
 .L2:
-	add	r3, r3, #1
-	and	r3, r3, #255
-	cmp	r3, r2
+	bl	g
+	add	r4, r4, #1
+	ldr	r3, [r5]
+	and	r4, r4, #255
+	cmp	r4, r3
 	bls	.L2
 .L5:
 	.align	2
 .L4:
 	.word	a
 	.size	f, .-f
-	.section	.text.startup,"ax",%progbits
-	.align	2
-	.global	main
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	main, %function
-main:
-	@ Function supports interworking.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, lr}
-	bl	f
-	mov	r0, #0
-	pop	{r4, lr}
-	bx	lr
-	.size	main, .-main
-	.text
-	.align	2
-	.global	g
-	.syntax unified
-	.arm
-	.fpu softvfp
-	.type	g, %function
-g:
-	@ Function supports interworking.
-	@ Naked Function: prologue and epilogue provided by programmer.
-	@ args = 0, pretend = 0, frame = 0
-	@ frame_needed = 0, uses_anonymous_args = 0
-	.size	g, .-g
 	.comm	a,4,4
 	.ident	"GCC: (15:9-2019-q4-0ubuntu1) 9.2.1 20191025 (release) [ARM/arm-9-branch revision 277599]"

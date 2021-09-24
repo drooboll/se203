@@ -3,11 +3,6 @@
 void f();
 void g();
 
-int main()
-{
-    f();
-}
-
 uint32_t a;
 
 __attribute__((naked)) void f()
@@ -16,9 +11,4 @@ __attribute__((naked)) void f()
     {
         g();
     }
-}
-
-__attribute__((naked)) void g()
-{
-    
 }
