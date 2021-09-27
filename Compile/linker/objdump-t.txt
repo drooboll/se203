@@ -1,0 +1,21 @@
+
+t.o:     file format elf32-littlearm
+
+SYMBOL TABLE:
+00000000 l    df *ABS*	00000000 t.c
+00000000 l    d  .text	00000000 .text
+00000000 l    d  .data	00000000 .data
+00000000 l    d  .bss	00000000 .bss
+00000000 l    d  .rodata	00000000 .rodata
+00000000 l       .bss	00000001 z.5206
+00000000 l    d  .comment	00000000 .comment
+00000000 l    d  .ARM.attributes	00000000 .ARM.attributes
+00000000 g     O .data	00000004 x
+// May be placed in .data or .bss
+// Alignement by 4 bytes
+00000004       O *COM*	00000004 y
+00000000 g     O .rodata	0000000d mesg
+00000000 g     F .text	000000b8 main
+00000000         *UND*	00000000 printf
+
+
