@@ -1,3 +1,6 @@
-# My new project
+# Files for se203 study track
 
-This is the default README.md. Please edit me.
+Probably it's possible to find working exaples here?
+
+- ASM -- asm code for STM32 board
+- Complie for tasks on compliation pipeline
