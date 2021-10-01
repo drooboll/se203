@@ -2,44 +2,43 @@ PREFIX = arm-none-eabi-
 CC = $(PREFIX)gcc
 AS = $(PREFIX)as
 LD = $(PREFIX)gcc
-GDB   = gdb-multiarch
+GDB = gdb-multiarch
+EXE = main
+SOURCES = main.c
+OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 
-CFLAGS = -g -Og
+CFLAGS = -g -O1 -c
 TARGET_ARCH = -mthumb -mcpu=cortex-m4
-LDFLAGS = -g
+LDFLAGS = -T ld_ram.lds -nostartfiles
 ASFLAGS = -g
 TARGET_MACH = $(TARGET_ARCH)
-
 LIBS = -lm
 
-NAME = main.elf
-OFILES = main.o
-DEPS = $(patsubst %.o, %.dep, $(OFILES))
+.PHONY: all debug gdbserver
+all: $(EXE)
+#	arm-none-eabi-gcc -c -g -O1 -mcpu=cortex-m4 -mthumb main.c -o main.o
+#	arm-none-eabi-gcc -T ld_ram.lds main.o -o main.elf -nostartfiles
 
-vpath %.c libs
-
-.PHONY: all clean
-
-all: $(NAME)
-
-$(NAME): $(OFILES)
-	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
-
-# %.o : %.c
-# 	$(GCC) $(CFLAGS) $< -o $@
+$(EXE): $(OBJECTS)
+	$(LD) $(LDFLAGS) $^ -o $@.elf $(LIBS)
+	rm -f $(DEPS)
+	rm -f $(OBJECTS)
+%.o : %.c
+	$(CC) $(CFLAGS) $(TARGET_ARCH) $< -o $@
 
 %.dep : %.c
 	$(CC) -MM $< -MF $@
 
 -include $(DEPS)
 
-connect:
+gdbserver:
 	JLinkGDBServer -device STM32L475VG -endian little -if SWD -speed auto -ir -LocalhostOnly
 
 debug:
-	$(GDB) -x gdbcmd
+	$(GDB) main.elf
 
 clean:
 	rm -f $(DEPS)
-	rm -f $(OFILES)
-	rm -f $(NAME)
+	rm -f $(OBJECTS)
+	rm -f $(EXE).elf
