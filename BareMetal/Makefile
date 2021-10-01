@@ -24,8 +24,6 @@ all: $(EXE)
 $(EXE): $(OBJECTS)
 	echo $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@.elf $(LIBS)
-	rm -f $(DEPS)
-	rm -f $(OBJECTS)
 
 %.o : %.c
 	$(CC) $(CFLAGS) $(TARGET_ARCH) $< -o $@
