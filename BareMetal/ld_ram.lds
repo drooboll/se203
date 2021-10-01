@@ -1,4 +1,4 @@
-ENTRY(main)
+ENTRY(_start)
 MEMORY
 {
     SRAM1 (rwx) : org = 0x20000000, LENGTH = 96K
@@ -22,6 +22,8 @@ SECTIONS
     } > SRAM1
     .bss :
     {
+        __bss_start = .;
         *(.bss) *(COMMON)
+        __bss_end = .;
     } > SRAM1
 }

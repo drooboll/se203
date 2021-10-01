@@ -4,14 +4,15 @@ AS = $(PREFIX)as
 LD = $(PREFIX)gcc
 GDB = gdb-multiarch
 EXE = main
-SOURCES = main.c
-OBJECTS = $(patsubst %.c, %.o, $(SOURCES))
+SOURCES = $(wildcard *.c)
+ASMSOURCES = $(wildcard *.s)
+OBJECTS = $(patsubst %.c, %.o, $(SOURCES)) $(patsubst %.s, %.o, $(ASMSOURCES))
 DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 
 CFLAGS = -g -O1 -c
 TARGET_ARCH = -mthumb -mcpu=cortex-m4
 LDFLAGS = -T ld_ram.lds -nostartfiles
-ASFLAGS = -g
+ASFLAGS = -g -c
 TARGET_MACH = $(TARGET_ARCH)
 LIBS = -lm
 
@@ -21,11 +22,16 @@ all: $(EXE)
 #	arm-none-eabi-gcc -T ld_ram.lds main.o -o main.elf -nostartfiles
 
 $(EXE): $(OBJECTS)
+	echo $(OBJECTS)
 	$(LD) $(LDFLAGS) $^ -o $@.elf $(LIBS)
 	rm -f $(DEPS)
 	rm -f $(OBJECTS)
+
 %.o : %.c
 	$(CC) $(CFLAGS) $(TARGET_ARCH) $< -o $@
+
+%.o : %.s
+	$(AS) $(ASFLAGS) $< -o $@
 
 %.dep : %.c
 	$(CC) -MM $< -MF $@
