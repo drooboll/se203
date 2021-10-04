@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "gpio.h"
+#include "clocks.h"
 
 uint8_t i = 0;
 
@@ -14,6 +15,7 @@ void stupidDelay()
 
 int main()
 {
+    clocks_init();
     gpio_init(GPIOB, 14);
     gpio_init(GPIOC, 9);
 

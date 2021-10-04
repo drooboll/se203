@@ -7,10 +7,11 @@ EXE = main
 SOURCES = $(wildcard *.c)
 ASMSOURCES = $(wildcard *.s)
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES)) $(patsubst %.s, %.o, $(ASMSOURCES))
+PREBUILT = clocks.o
 DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 
 CFLAGS = -g -O1 -c
-TARGET_ARCH = -mthumb -mcpu=cortex-m4
+TARGET_ARCH = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard
 LDFLAGS = -T ld_ram.lds -nostartfiles
 ASFLAGS = -g -c
 TARGET_MACH = $(TARGET_ARCH)
@@ -21,8 +22,8 @@ all: $(EXE)
 #	arm-none-eabi-gcc -c -g -O1 -mcpu=cortex-m4 -mthumb main.c -o main.o
 #	arm-none-eabi-gcc -T ld_ram.lds main.o -o main.elf -nostartfiles
 
-$(EXE): $(OBJECTS)
-	echo $(OBJECTS)
+$(EXE): $(OBJECTS) $(PREBUILT)
+	@echo $^
 	$(LD) $(LDFLAGS) $^ -o $@.elf $(LIBS)
 
 %.o : %.c
