@@ -9,4 +9,7 @@ _start:
     @ call bss init
     bl __init_bss
     @ call main
-    b main
+    bl main
+    @ something wrong
+_exit:
+    b _exit
