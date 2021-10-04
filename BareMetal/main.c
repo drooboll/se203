@@ -1,6 +1,7 @@
+#define STM32L475xx
 #include <stdint.h>
-#include "gpio.h"
 #include "clocks.h"
+#include "stm32l4xx.h"
 
 uint8_t i = 0;
 
@@ -16,20 +17,26 @@ void stupidDelay()
 int main()
 {
     clocks_init();
-    gpio_init(GPIOB, 14);
-    gpio_init(GPIOC, 9);
+
+    RCC->AHB2ENR |= 1 << RCC_AHB2ENR_GPIOBEN_Pos;
+    GPIOB->MODER &= ~(0b11 << GPIO_MODER_MODE14_Pos);
+    GPIOB->MODER |= 0b01 << GPIO_MODER_MODE14_Pos;
+
+    RCC->AHB2ENR |= 1 << RCC_AHB2ENR_GPIOCEN_Pos;
+    GPIOC->MODER &= ~(0b11 << GPIO_MODER_MODE9_Pos);
+    GPIOC->MODER |= 0b01 << GPIO_MODER_MODE9_Pos;
 
     while(1)
     {
-        gpio_set(GPIOC, 9, ON);
+        GPIOC->BSRR |= 1 << GPIO_BSRR_BR9_Pos; // Disable Green
+        GPIOB->MODER |= 0b01 << GPIO_MODER_MODE14_Pos;
+        GPIOB->BSRR |= 1 << GPIO_BSRR_BS14_Pos; // Yellow
         stupidDelay();
-        gpio_set(GPIOC, 9, OFF);
-        gpio_init(GPIOB, 14);
-        gpio_set(GPIOB, 14, ON);
+        GPIOB->BSRR |= 1 << GPIO_BSRR_BR14_Pos; // Blue
         stupidDelay();
-        gpio_set(GPIOB, 14, OFF);
+        GPIOB->MODER &= ~(0b11 << GPIO_MODER_MODE14_Pos); // Disable YB
+        GPIOC->BSRR |= 1 << GPIO_BSRR_BS9_Pos; // Green
         stupidDelay();
-        gpio_deinit(GPIOB, 14);
     }
 
     return 0;
