@@ -6,3 +6,5 @@
 !*/
 .vs*
 !Makefile
+!clocks.o
+
