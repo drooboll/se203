@@ -1,27 +1,34 @@
 #include <stdint.h>
+#include "gpio.h"
 
 uint8_t i = 0;
 
-uint_fast32_t fibo(uint_fast32_t n)
+void stupidDelay()
 {
-    if (!n)
+    // Guess that at 8Mhz that's ~250 ms
+    for (uint32_t i = 0; i < 500000; ++i)
     {
-        return 0;
+        asm("nop");
     }
-    
-    if (n == 1)
-    {
-        return 1;
-    }
-
-    return fibo(n - 1) + fibo(n - 2);
 }
 
 int main()
 {
-    uint_fast32_t test = fib(8);
+    gpio_init(GPIOB, 14);
+    gpio_init(GPIOC, 9);
 
-    while(1){}
+    while(1)
+    {
+        gpio_set(GPIOC, 9, ON);
+        stupidDelay();
+        gpio_set(GPIOC, 9, OFF);
+        gpio_init(GPIOB, 14);
+        gpio_set(GPIOB, 14, ON);
+        stupidDelay();
+        gpio_set(GPIOB, 14, OFF);
+        stupidDelay();
+        gpio_deinit(GPIOB, 14);
+    }
 
     return 0;
 }
