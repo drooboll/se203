@@ -11,9 +11,9 @@ PREBUILT = clocks.o
 DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 DIRS = -I CMSIS/Device/ST/STM32L4xx/Include -I CMSIS/Include
 
-CFLAGS = -g -O1 -c
+CFLAGS = -g -O1 -c -ffreestanding
 TARGET_ARCH = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard
-LDFLAGS = -T ld_ram.lds -nostartfiles
+LDFLAGS = -T ld_ram.lds -nostartfiles -ffreestanding -nolibc
 ASFLAGS = -g -c
 TARGET_MACH = $(TARGET_ARCH)
 LIBS = -lm
@@ -23,7 +23,7 @@ all: $(EXE)
 
 $(EXE): $(OBJECTS) $(PREBUILT)
 	@echo $^
-	$(LD) $(LDFLAGS) $^ -o $@.elf $(LIBS)
+	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 %.o : %.c
 	$(CC) $(CFLAGS) $(TARGET_ARCH) $< -o $@ $(DIRS)
@@ -40,9 +40,9 @@ gdbserver:
 	JLinkGDBServer -device STM32L475VG -endian little -if SWD -speed auto -ir -LocalhostOnly
 
 debug:
-	$(GDB) main.elf
+	$(GDB) $(EXE)
 
 clean:
 	rm -f $(DEPS)
 	rm -f $(OBJECTS)
-	rm -f $(EXE).elf
+	rm -f $(EXE)
