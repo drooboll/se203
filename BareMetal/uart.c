@@ -1,4 +1,7 @@
 #include "uart.h"
+#include "utils.h"
+#include <stdio.h>
+#include <string.h>
 
 void uart_init()
 {
@@ -81,4 +84,21 @@ void uart_gets_separator(char *s, size_t size, char sep)
 			break;
 		}
 	}
+}
+
+void uart_sum(size_t count)
+{
+	uint32_t sum = 0;
+
+	for (size_t i = 0; i < count; ++i)
+	{
+		sum += uart_getchar();
+	}
+
+	char buf[10];
+
+	itoa(buf, sum);
+
+	uart_puts(buf);
+	uart_puts("\r\n");
 }

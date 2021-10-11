@@ -9,3 +9,6 @@ USART1: 0x40013800
     CR3 0x08 
     BRR 0x0c 2b6
 Prescaler: 2b6
+
+126896
+0x1efb0

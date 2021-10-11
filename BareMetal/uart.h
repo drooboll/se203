@@ -1,3 +1,6 @@
+#ifndef UART_H
+#define UART_H
+
 #define STM32L475xx
 #define F_CPU 80000000UL
 #include "stm32l4xx.h"
@@ -11,3 +14,6 @@ uint8_t uart_getchar();
 void uart_puts(const char *s);
 void uart_gets(char *s, size_t size);
 void uart_gets_separator(char *s, size_t size, char sep);
+void uart_sum(size_t count);
+
+#endif

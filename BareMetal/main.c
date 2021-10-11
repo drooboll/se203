@@ -11,12 +11,11 @@ int main()
     clocks_init();
     uart_init();
 
-    uart_puts("Testing test>\r\n");
+    uart_puts("Checksum>\r\n");
 
     while(1)
     {
-        uint8_t rec = uart_getchar();
-        uart_putchar(rec);
+        uart_sum(1000);
     }
 
     return 0;
