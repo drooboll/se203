@@ -18,6 +18,8 @@ typedef struct matrix_color
     uint8_t r;
 } rgb_color;
 
+rgb_color picture[8][8];
+
 void RST(pinValue x);
 void SB(pinValue x);
 void LAT(pinValue x);
@@ -36,5 +38,7 @@ void set_row(uint8_t row, const rgb_color* value);
 void matrix_init();
 
 void test_matrix();
+
+void show_picture();
 
 #endif

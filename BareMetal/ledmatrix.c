@@ -1,5 +1,18 @@
 #include "ledmatrix.h"
 
+void picture_init()
+{
+    for (uint32_t row = 0; row < 8; ++row)
+    {
+        for (uint32_t col = 0; col < 8; ++col)
+        {
+            picture[row][col].b = 1 << row;
+            picture[row][col].g = 1 << (7 - row);
+            picture[row][col].r = 1 << col;
+        }
+    }
+}
+
 void matrix_init()
 {
     RCC->AHB2ENR |=  RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN;
@@ -63,6 +76,8 @@ void matrix_init()
 
     // Should be reset already
     RST(HIGH);
+
+    picture_init();
 }
 
 void RST(pinValue x)
@@ -164,8 +179,7 @@ void send_byte(uint8_t val, int bank)
 
 void set_row(uint8_t row, const rgb_color* value)
 {
-    deactivate_rows();
-    ROW(row, HIGH);
+    ROW((row + 7) % 8, LOW);
 
     for (uint32_t i = 0; i < 8; ++i)
     {
@@ -175,24 +189,24 @@ void set_row(uint8_t row, const rgb_color* value)
     }
 
     LAT_pulse();
+
+    ROW(row, HIGH);
+}
+
+void show_picture()
+{
+    for (uint32_t row = 0; row < 8; ++row)
+    {
+        set_row(row, picture[row]);
+
+        for (uint32_t i = 0; i < 10000; ++i)
+        {
+            asm("nop");
+        }
+    }
 }
 
 void test_matrix()
 {
-    static uint32_t row = 0;
-
-    rgb_color color[8];
-
-    for (uint32_t i = 0; i < 8; ++i)
-    {
-        color[i].b = 0;
-        color[i].g = 1 << i;
-        color[i].r = 1 << row;
-    }
-
-    set_row(row, color);
-
-    row++;
-
-    row %= 8;
+    show_picture();
 }
