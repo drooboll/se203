@@ -179,8 +179,6 @@ void send_byte(uint8_t val, int bank)
 
 void set_row(uint8_t row, const rgb_color* value)
 {
-    ROW((row + 7) % 8, LOW);
-
     for (uint32_t i = 0; i < 8; ++i)
     {
         send_byte(value[i].b, 1);
@@ -190,6 +188,8 @@ void set_row(uint8_t row, const rgb_color* value)
 
     LAT_pulse();
 
+    ROW((row + 7) % 8, LOW);
+
     ROW(row, HIGH);
 }
 
@@ -198,11 +198,6 @@ void show_picture()
     for (uint32_t row = 0; row < 8; ++row)
     {
         set_row(row, picture[row]);
-
-        for (uint32_t i = 0; i < 10000; ++i)
-        {
-            asm("nop");
-        }
     }
 }
 
