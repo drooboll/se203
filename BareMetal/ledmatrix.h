@@ -1,5 +1,5 @@
-#ifndef CLOCKS_H
-#define CLOCKS_H
+#ifndef MATRIX_H
+#define MATRIX_H
 
 #define STM32L475xx
 #include "stm32l4xx.h"
@@ -10,6 +10,13 @@ typedef enum
     LOW = 0,
     HIGH
 } pinValue;
+
+typedef struct matrix_color
+{
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+} rgb_color;
 
 void RST(pinValue x);
 void SB(pinValue x);
@@ -28,11 +35,6 @@ void set_row(uint8_t row, const rgb_color* value);
 
 void matrix_init();
 
-typedef struct
-{
-    uint8_t b;
-    uint8_t g;
-    uint8_t r;
-} rgb_color;
+void test_matrix();
 
 #endif

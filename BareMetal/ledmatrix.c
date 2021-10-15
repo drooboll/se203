@@ -2,31 +2,47 @@
 
 void matrix_init()
 {
-    RCC->APB2ENR |=  1 << RCC_AHB2ENR_GPIOAEN | 1 << RCC_AHB2ENR_GPIOBEN | 1 << RCC_AHB2ENR_GPIOCEN;
+    RCC->AHB2ENR |=  RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN;
 
     // All as outputs
     // PA4, PA15, PA2, PA7, PA6, PA5, PA3
-    GPIOA->MODER &= ~(0b11 << GPIO_MODER_MODE4 | 0b11 << GPIO_MODER_MODE15 | 0b11 << GPIO_MODER_MODE2 |
-                      0b11 << GPIO_MODER_MODE7 | 0b11 << GPIO_MODER_MODE6 | 0b11 << GPIO_MODER_MODE5 |
-                      0b11 << GPIO_MODER_MODE3);
-    GPIOA->MODER |= 0b01 << GPIO_MODER_MODE4 | 0b01 << GPIO_MODER_MODE15 | 0b01 << GPIO_MODER_MODE2 |
-                    0b01 << GPIO_MODER_MODE7 | 0b01 << GPIO_MODER_MODE6 | 0b01 << GPIO_MODER_MODE5 |
-                    0b01 << GPIO_MODER_MODE3;
+    GPIOA->MODER &= ~(0b11 << GPIO_MODER_MODE4_Pos | 0b11 << GPIO_MODER_MODE15_Pos | 0b11 << GPIO_MODER_MODE2_Pos |
+                      0b11 << GPIO_MODER_MODE7_Pos | 0b11 << GPIO_MODER_MODE6_Pos | 0b11 << GPIO_MODER_MODE5_Pos |
+                      0b11 << GPIO_MODER_MODE3_Pos);
+    GPIOA->MODER |= 0b01 << GPIO_MODER_MODE4_Pos | 0b01 << GPIO_MODER_MODE15_Pos | 0b01 << GPIO_MODER_MODE2_Pos |
+                    0b01 << GPIO_MODER_MODE7_Pos | 0b01 << GPIO_MODER_MODE6_Pos | 0b01 << GPIO_MODER_MODE5_Pos |
+                    0b01 << GPIO_MODER_MODE3_Pos;
 
-    GPIOA->OSPEEDR |= 0b11 << GPIO_OSPEEDER_OSPEEDR4 | 0b11 << GPIO_OSPEEDER_OSPEEDR15 |
-                      0b11 << GPIO_OSPEEDER_OSPEEDR2 | 0b11 << GPIO_OSPEEDER_OSPEEDR7 |
-                      0b11 << GPIO_OSPEEDER_OSPEEDR6 | 0b11 << GPIO_OSPEEDER_OSPEEDR5 |
-                      0b11 << GPIO_OSPEEDER_OSPEEDR3;
+    GPIOA->OSPEEDR |= 0b11 << GPIO_OSPEEDR_OSPEED4_Pos | 0b11 << GPIO_OSPEEDR_OSPEED15_Pos |
+                      0b11 << GPIO_OSPEEDR_OSPEED2_Pos | 0b11 << GPIO_OSPEEDR_OSPEED7_Pos |
+                      0b11 << GPIO_OSPEEDR_OSPEED6_Pos | 0b11 << GPIO_OSPEEDR_OSPEED5_Pos |
+                      0b11 << GPIO_OSPEEDR_OSPEED3_Pos;
 
     // All as outputs
     // PB1, PB2, PB0
-    GPIOB->MODER &= ~(0b11 << GPIO_MODER_MODE0 | 0b11 << GPIO_MODER_MODE0 | 0b11 << GPIO_MODER_MODE0);
-    GPIOB->MODER |= 0b01 << GPIO_MODER_MODE0 | 0b01 << GPIO_MODER_MODE0 | 0b01 << GPIO_MODER_MODE0;
+    GPIOB->MODER &= ~(0b11 << GPIO_MODER_MODE0_Pos | 0b11 << GPIO_MODER_MODE1_Pos | 0b11 << GPIO_MODER_MODE2_Pos);
+    GPIOB->MODER |= 0b01 << GPIO_MODER_MODE0_Pos | 0b01 << GPIO_MODER_MODE1_Pos | 0b01 << GPIO_MODER_MODE2_Pos;
 
+    GPIOB->OSPEEDR |= 0b11 << GPIO_OSPEEDR_OSPEED0_Pos | 0b11 << GPIO_OSPEEDR_OSPEED1_Pos |
+                      0b11 << GPIO_OSPEEDR_OSPEED2_Pos;
     // All as outputs
     // PC5, PC4, PC3
-    GPIOC->MODER &= ~(0b11 << GPIO_MODER_MODE5 | 0b11 << GPIO_MODER_MODE4 | 0b11 << GPIO_MODER_MODE3);
-    GPIOC->MODER |= 0b01 << GPIO_MODER_MODE5 | 0b01 << GPIO_MODER_MODE4 | 0b01 << GPIO_MODER_MODE3;
+    GPIOC->MODER &= ~(0b11 << GPIO_MODER_MODE5_Pos | 0b11 << GPIO_MODER_MODE4_Pos | 0b11 << GPIO_MODER_MODE3_Pos);
+    GPIOC->MODER |= 0b01 << GPIO_MODER_MODE5_Pos | 0b01 << GPIO_MODER_MODE4_Pos | 0b01 << GPIO_MODER_MODE3_Pos;
+
+    GPIOC->OSPEEDR |= 0b11 << GPIO_OSPEEDR_OSPEED3_Pos | 0b11 << GPIO_OSPEEDR_OSPEED4_Pos |
+                      0b11 << GPIO_OSPEEDR_OSPEED5_Pos;
+
+    RST(HIGH);
+
+    // Wait 100 ms
+    // 80 MHz ~ 4E7 loops /s
+    // 100 ms ~ 4E6 loops
+
+    for (uint32_t i = 0; i < 5 * 1000 * 1000; ++i)
+    {
+        asm("nop");
+    }
 
     RST(LOW);
     LAT(HIGH);
@@ -51,27 +67,27 @@ void matrix_init()
 
 void RST(pinValue x)
 {
-    GPIOC->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
+    GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
 }
 
 void SB(pinValue x)
 {
-    GPIOC->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
+    GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
 }
 
 void LAT(pinValue x)
 {
-    GPIOC->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
 void SCK(pinValue x)
 {
-    GPIOB->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
+    GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
 }
 
 void SDA(pinValue x)
 {
-    GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
 void ROW(uint32_t addr, pinValue x)
@@ -79,28 +95,28 @@ void ROW(uint32_t addr, pinValue x)
     switch (addr)
     {
     case 0:
-        GPIOB->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS2 : GPIO_BSRR_BR2);
+        GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS2 : GPIO_BSRR_BR2);
         break;
     case 1:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS15 : GPIO_BSRR_BR15);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS15 : GPIO_BSRR_BR15);
         break;
     case 2:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS2 : GPIO_BSRR_BR2);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS2 : GPIO_BSRR_BR2);
         break;
     case 3:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS7 : GPIO_BSRR_BR7);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS7 : GPIO_BSRR_BR7);
         break;
     case 4:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS6 : GPIO_BSRR_BR6);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS6 : GPIO_BSRR_BR6);
         break;
     case 5:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5);
         break;
     case 6:
-        GPIOB->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS0 : GPIO_BSRR_BR0);
+        GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS0 : GPIO_BSRR_BR0);
         break;
     case 7:
-        GPIOA->BSRR |= 1 << (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3);
+        GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3);
         break;
     default:
         break;
@@ -139,16 +155,17 @@ void send_byte(uint8_t val, int bank)
 {
     SB(bank ? HIGH : LOW);
 
-    for (uint32_t i = 8; i >= 0; --i)
+    for (uint32_t i = 0; i < 8; ++i)
     {
-        SDA((val & (1 << i)) >> i);
+        SDA((val & (1 << (7 - i))) >> (7 - i));
         SCK_pulse();
     }
 }
 
 void set_row(uint8_t row, const rgb_color* value)
 {
-    ROW(row, LOW);
+    deactivate_rows();
+    ROW(row, HIGH);
 
     for (uint32_t i = 0; i < 8; ++i)
     {
@@ -158,4 +175,24 @@ void set_row(uint8_t row, const rgb_color* value)
     }
 
     LAT_pulse();
+}
+
+void test_matrix()
+{
+    static uint32_t row = 0;
+
+    rgb_color color[8];
+
+    for (uint32_t i = 0; i < 8; ++i)
+    {
+        color[i].b = 0;
+        color[i].g = 1 << i;
+        color[i].r = 1 << row;
+    }
+
+    set_row(row, color);
+
+    row++;
+
+    row %= 8;
 }
