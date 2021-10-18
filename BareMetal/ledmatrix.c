@@ -2,7 +2,7 @@
 
 void picture_init()
 {
-    for (uint32_t row = 0; row < 8; ++row)
+    /*for (uint32_t row = 0; row < 8; ++row)
     {
         for (uint32_t col = 0; col < 8; ++col)
         {
@@ -10,7 +10,7 @@ void picture_init()
             picture[row][col].g = 1 << (7 - row);
             picture[row][col].r = 1 << col;
         }
-    }
+    }*/
 }
 
 void matrix_init()
@@ -189,7 +189,7 @@ void set_row(uint8_t row, const rgb_color* value)
     LAT_pulse();
 
     ROW((row + 7) % 8, LOW);
-
+    
     ROW(row, HIGH);
 }
 
@@ -197,7 +197,7 @@ void show_picture()
 {
     for (uint32_t row = 0; row < 8; ++row)
     {
-        set_row(row, picture[row]);
+        set_row(row, &_binary_image_raw_start + row * 8);
     }
 }
 

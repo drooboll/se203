@@ -17,7 +17,7 @@ SECTIONS
     .rodata :
     {
         *(.rodata)
-    }
+    } > SRAM1
     .data :
     {
         *(.data)

@@ -2,6 +2,7 @@ PREFIX = arm-none-eabi-
 CC = $(PREFIX)gcc
 AS = $(PREFIX)as
 LD = $(PREFIX)gcc
+OBJCOPY = $(PREFIX)objcopy
 GDB = gdb-multiarch
 EXE = main
 SOURCES = $(wildcard *.c)
@@ -21,7 +22,7 @@ LIBS = -lm
 .PHONY: all debug gdbserver
 all: $(EXE)
 
-$(EXE): $(OBJECTS) $(PREBUILT)
+$(EXE): $(OBJECTS) $(PREBUILT) image.o
 	@echo $^
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 
@@ -33,6 +34,8 @@ $(EXE): $(OBJECTS) $(PREBUILT)
 %.dep : %.c
 	$(CC) -MM $< -MF $@ $(DIRS)
 
+image.o: image.raw
+	$(OBJCOPY) -I binary -O elf32-littlearm --rename-section .data=.rodata $^ image.o
 
 -include $(DEPS)
 
