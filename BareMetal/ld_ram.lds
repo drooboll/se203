@@ -1,4 +1,6 @@
-ENTRY(_start)
+ENTRY(_start);
+__sp_start = ORIGIN(SRAM2) + LENGTH(SRAM2);
+
 MEMORY
 {
     SRAM1 (rwx) : org = 0x20000000, LENGTH = 96K
@@ -15,7 +17,7 @@ SECTIONS
     .rodata :
     {
         *(.rodata)
-    }
+    } > SRAM1
     .data :
     {
         *(.data)

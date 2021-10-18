@@ -4,7 +4,7 @@
     .thumb
 _start:
     @ init SP
-    ldr r0, =0x10007000
+    ldr r0, =__sp_start
     mov sp, r0
     @ call bss init
     bl __init_bss
