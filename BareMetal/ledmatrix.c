@@ -1,18 +1,5 @@
 #include "ledmatrix.h"
 
-void picture_init()
-{
-    /*for (uint32_t row = 0; row < 8; ++row)
-    {
-        for (uint32_t col = 0; col < 8; ++col)
-        {
-            picture[row][col].b = 1 << row;
-            picture[row][col].g = 1 << (7 - row);
-            picture[row][col].r = 1 << col;
-        }
-    }*/
-}
-
 void matrix_init()
 {
     RCC->AHB2ENR |=  RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN | RCC_AHB2ENR_GPIOCEN;
@@ -48,15 +35,6 @@ void matrix_init()
 
     RST(HIGH);
 
-    // Wait 100 ms
-    // 80 MHz ~ 4E7 loops /s
-    // 100 ms ~ 4E6 loops
-
-    for (uint32_t i = 0; i < 5 * 1000 * 1000; ++i)
-    {
-        asm("nop");
-    }
-
     RST(LOW);
     LAT(HIGH);
     SB(HIGH);
@@ -76,8 +54,6 @@ void matrix_init()
 
     // Should be reset already
     RST(HIGH);
-
-    picture_init();
 }
 
 void RST(pinValue x)
