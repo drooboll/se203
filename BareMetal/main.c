@@ -3,9 +3,13 @@
 #include <stdint.h>
 #include "clocks.h"
 #include "ledmatrix.h"
+#include "irq.h"
+#include "buttons.h"
 
 int main()
 {
+    irq_init();
+    button_init();
     clocks_init();
     matrix_init();
 

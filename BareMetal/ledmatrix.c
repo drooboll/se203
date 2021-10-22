@@ -56,32 +56,32 @@ void matrix_init()
     RST(HIGH);
 }
 
-void RST(pinValue x)
+static void RST(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
 }
 
-void SB(pinValue x)
+static void SB(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
 }
 
-void LAT(pinValue x)
+static void LAT(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-void SCK(pinValue x)
+static void SCK(pinValue x)
 {
     GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
 }
 
-void SDA(pinValue x)
+static void SDA(pinValue x)
 {
     GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-void ROW(uint32_t addr, pinValue x)
+static void ROW(uint32_t addr, pinValue x)
 {
     switch (addr)
     {
@@ -117,7 +117,7 @@ void ROW(uint32_t addr, pinValue x)
 // 2ms minimum for clock pulse
 // Each closk is 1/8E7 = 12.5 ns
 // No need for delay 
-void SCK_pulse()
+static void SCK_pulse()
 {
     SCK(LOW);
     SCK(HIGH);
@@ -125,7 +125,7 @@ void SCK_pulse()
 }
 
 
-void LAT_pulse()
+static void LAT_pulse()
 {
     LAT(HIGH);
     // At least 25ns here
@@ -138,14 +138,14 @@ void LAT_pulse()
     LAT(HIGH);
 }
 
-void deactivate_rows(){
+static void deactivate_rows(){
     for (uint32_t i = 0; i < 8; ++i)
     {
         ROW(i, LOW);
     }
 }
 
-void send_byte(uint8_t val, int bank)
+static void send_byte(uint8_t val, int bank)
 {
     SB(bank ? HIGH : LOW);
 
@@ -156,7 +156,7 @@ void send_byte(uint8_t val, int bank)
     }
 }
 
-void set_row(uint8_t row, const rgb_color* value)
+static void set_row(uint8_t row, const rgb_color* value)
 {
     for (uint32_t i = 0; i < 8; ++i)
     {
