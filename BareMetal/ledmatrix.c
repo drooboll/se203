@@ -132,6 +132,9 @@ void LAT_pulse()
     asm("nop");
     asm("nop");
     LAT(LOW);
+    // At least 25ns here
+    asm("nop");
+    asm("nop");
     LAT(HIGH);
 }
 
@@ -162,11 +165,22 @@ void set_row(uint8_t row, const rgb_color* value)
         send_byte(value[i].r, 1);
     }
 
-    LAT_pulse();
+    deactivate_rows();
 
-    ROW((row + 7) % 8, LOW);
+    // M54564 deactivate time up to 5us (avoid interleaving)
+    for (uint32_t i = 0; i < 100; ++i)
+    {
+        asm("nop");
+    }
+
+    LAT_pulse(); 
     
     ROW(row, HIGH);
+
+    for (uint32_t i = 0; i < 2 * 100; ++i)
+    {
+        asm("nop");
+    }   
 }
 
 void show_picture()
