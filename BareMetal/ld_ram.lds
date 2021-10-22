@@ -14,18 +14,22 @@ SECTIONS
     {
         *(.text)
     } > SRAM1
-    .rodata :
-    {
-        *(.rodata)
-    } > SRAM1
     .data :
     {
         *(.data)
+    } > SRAM1
+    .rodata :
+    {
+        *(.rodata)
     } > SRAM1
     .bss :
     {
         __bss_start = .;
         *(.bss) *(COMMON)
         __bss_end = .;
+    } > SRAM1
+    .irq_handlers : ALIGN(256)
+    {
+        *(.irq_handlers)
     } > SRAM1
 }

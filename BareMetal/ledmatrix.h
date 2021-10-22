@@ -20,20 +20,20 @@ typedef struct matrix_color
 
 extern rgb_color _binary_image_raw_start, _binary_image_raw_end; 
 
-void RST(pinValue x);
-void SB(pinValue x);
-void LAT(pinValue x);
-void SCK(pinValue x);
-void SDA(pinValue x);
-void ROW(uint32_t addr, pinValue x);
+static void RST(pinValue x);
+static void SB(pinValue x);
+static void LAT(pinValue x);
+static void SCK(pinValue x);
+static void SDA(pinValue x);
+static void ROW(uint32_t addr, pinValue x);
 
-void SCK_pulse();
-void LAT_pulse();
-void deactivate_rows();
+static void SCK_pulse();
+static void LAT_pulse();
+static void deactivate_rows();
 
-void send_byte(uint8_t val, int bank);
+static void send_byte(uint8_t val, int bank);
 
-void set_row(uint8_t row, const rgb_color* value);
+static void set_row(uint8_t row, const rgb_color* value);
 
 void matrix_init();
 
