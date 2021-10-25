@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-void uart_init()
+volatile uint8_t uartBuffer[3 * 8 * 8];
+volatile size_t bufferPosition = 0;
+
+void uart_init(uint32_t baudrate)
 {
 	// Enable GPIO
 	RCC->AHB2ENR |= 1 << RCC_AHB2ENR_GPIOBEN_Pos;
@@ -16,14 +19,17 @@ void uart_init()
 
 	// PCLK
 	RCC->CCIPR &= RCC_CCIPR_USART1SEL_Msk;
-	// Both Tx & Rx
-	USART1->CR1 |= 1 << USART_CR1_RE_Pos | 1 << USART_CR1_TE_Pos;
+	// Both Tx & Rx + input match + rx interrupts
+	USART1->CR1 |= USART_CR1_RE | USART_CR1_TE | USART_CR1_CMIE | USART_CR1_RXNEIE;
+	// Define input match on 0xff
+	USART1->CR2 |= 0xff << USART_CR2_ADD_Pos;
 
-	// Baud 115200 (maybe) OVER8 = 0 by default
-	USART1->BRR = F_CPU / 115200;
+	USART1->BRR = F_CPU / baudrate;
 
 	// Enable UART
 	USART1->CR1 |= 1 << USART_CR1_UE_Pos;
+
+	NVIC_EnableIRQ(USART1_IRQn);
 }
 
 void uart_putchar(uint8_t c)
@@ -101,4 +107,53 @@ void uart_sum(size_t count)
 
 	uart_puts(buf);
 	uart_puts("\r\n");
+}
+
+void USART1_IRQHandler()
+{
+	uint32_t isr = USART1->ISR;
+
+	if (isr & USART_ISR_CMF)
+	{
+		bufferPosition = 0;
+
+		bufferFullFlag = 0;
+
+		USART1->ICR |= USART_ICR_CMCF;
+
+		uint32_t dummy = USART1->RDR;
+
+		return;
+	}
+
+	if (isr & USART_ISR_RXNE)
+	{
+		uartBuffer[bufferPosition++] = (uint8_t) USART1->RDR;
+
+		if (bufferPosition == 8 * 8 * 3)
+		{
+			bufferFullFlag = 1;
+
+			// Avoid bad things
+			bufferPosition = 0;
+		}
+
+		return;
+	}
+
+	// Debug
+	while (1)
+	{
+		asm("nop");
+	}
+}
+
+uint32_t uart_buffer_full()
+{
+	return bufferFullFlag;
+}
+
+uint32_t uart_buffer_full_reset()
+{
+	bufferFullFlag = 0;
 }

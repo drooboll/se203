@@ -12,7 +12,7 @@ PREBUILT = clocks.o
 DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 DIRS = -I CMSIS/Device/ST/STM32L4xx/Include -I CMSIS/Include
 
-CFLAGS = -g -O1 -c -ffreestanding
+CFLAGS = -g -O2 -c -ffreestanding
 TARGET_ARCH = -mthumb -mcpu=cortex-m4 -mfloat-abi=hard
 LDFLAGS = -T ld_ram.lds -nostartfiles -ffreestanding -nolibc
 ASFLAGS = -g -c

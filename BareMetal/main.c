@@ -5,6 +5,7 @@
 #include "ledmatrix.h"
 #include "irq.h"
 #include "buttons.h"
+#include "uart.h"
 
 int main()
 {
@@ -12,12 +13,18 @@ int main()
     button_init();
     clocks_init();
     matrix_init();
-
-    uint32_t row = 0;
+    uart_init(38400);
 
     while(1)
-    {
-        test_matrix();
+    {  
+        if (uart_buffer_full())
+        {
+            update_picture(uartBuffer);
+
+            uart_buffer_full_reset();
+        }
+
+        show_picture();
     }
 
     return 0;

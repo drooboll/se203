@@ -20,6 +20,8 @@ typedef struct matrix_color
 
 extern rgb_color _binary_image_raw_start, _binary_image_raw_end; 
 
+rgb_color imageBuffer[8 * 8];
+
 static void RST(pinValue x);
 static void SB(pinValue x);
 static void LAT(pinValue x);
@@ -37,8 +39,8 @@ static void set_row(uint8_t row, const rgb_color* value);
 
 void matrix_init();
 
-void test_matrix();
-
 void show_picture();
+
+void update_picture();
 
 #endif

@@ -54,6 +54,11 @@ void matrix_init()
 
     // Should be reset already
     RST(HIGH);
+
+    for (uint32_t i = 0; i < 8 * 8; ++i)
+    {
+        imageBuffer[i] = (&_binary_image_raw_start)[i];
+    }
 }
 
 static void RST(pinValue x)
@@ -160,15 +165,15 @@ static void set_row(uint8_t row, const rgb_color* value)
 {
     for (uint32_t i = 0; i < 8; ++i)
     {
-        send_byte(value[i].b, 1);
-        send_byte(value[i].g, 1);
-        send_byte(value[i].r, 1);
+        send_byte(value[7-i].b, 1);
+        send_byte(value[7-i].g, 1);
+        send_byte(value[7-i].r, 1);
     }
 
     deactivate_rows();
 
     // M54564 deactivate time up to 5us (avoid interleaving)
-    for (uint32_t i = 0; i < 100; ++i)
+    for (volatile uint32_t i = 0; i < 100; ++i)
     {
         asm("nop");
     }
@@ -177,7 +182,7 @@ static void set_row(uint8_t row, const rgb_color* value)
     
     ROW(row, HIGH);
 
-    for (uint32_t i = 0; i < 2 * 100; ++i)
+    for (volatile uint32_t i = 0; i < 100; ++i)
     {
         asm("nop");
     }   
@@ -185,13 +190,20 @@ static void set_row(uint8_t row, const rgb_color* value)
 
 void show_picture()
 {
+    GPIOB->BSRR |= GPIO_BSRR_BS14;
     for (uint32_t row = 0; row < 8; ++row)
     {
-        set_row(row, &_binary_image_raw_start + row * 8);
+        set_row(row, imageBuffer + row * 8);
     }
+
+    GPIOB->BSRR |= GPIO_BSRR_BR14;
 }
 
-void test_matrix()
+void update_picture(uint8_t* newPicture)
 {
-    show_picture();
+    for (uint32_t i = 0; i < 192 / 4; ++i)
+    {
+        // I am very sure
+        ((uint32_t*) imageBuffer)[i] = ((uint32_t*) newPicture)[i];
+    }
 }
