@@ -61,32 +61,32 @@ void matrix_init()
     }
 }
 
-static void RST(pinValue x)
+static inline void RST(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
 }
 
-static void SB(pinValue x)
+static inline void SB(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
 }
 
-static void LAT(pinValue x)
+static inline void LAT(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-static void SCK(pinValue x)
+static inline void SCK(pinValue x)
 {
     GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
 }
 
-static void SDA(pinValue x)
+static inline void SDA(pinValue x)
 {
-    GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOA->BSRR |= (x > LOW ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-static void ROW(uint32_t addr, pinValue x)
+static inline void ROW(uint32_t addr, pinValue x)
 {
     switch (addr)
     {
@@ -133,11 +133,9 @@ static void SCK_pulse()
 static void LAT_pulse()
 {
     LAT(HIGH);
-    // At least 25ns here
     asm("nop");
     asm("nop");
     LAT(LOW);
-    // At least 25ns here
     asm("nop");
     asm("nop");
     LAT(HIGH);
@@ -156,12 +154,12 @@ static void send_byte(uint8_t val, int bank)
 
     for (uint32_t i = 0; i < 8; ++i)
     {
-        SDA((val & (1 << (7 - i))) >> (7 - i));
+        SDA(val & (1 << (7 - i)));
         SCK_pulse();
     }
 }
 
-static void set_row(uint8_t row, const rgb_color* value)
+static inline void set_row(uint8_t row, const rgb_color* value)
 {
     for (uint32_t i = 0; i < 8; ++i)
     {
@@ -181,29 +179,24 @@ static void set_row(uint8_t row, const rgb_color* value)
     LAT_pulse(); 
     
     ROW(row, HIGH);
-
-    for (volatile uint32_t i = 0; i < 100; ++i)
-    {
-        asm("nop");
-    }   
 }
 
 void show_picture()
 {
-    GPIOB->BSRR |= GPIO_BSRR_BS14;
     for (uint32_t row = 0; row < 8; ++row)
     {
         set_row(row, imageBuffer + row * 8);
     }
-
-    GPIOB->BSRR |= GPIO_BSRR_BR14;
 }
 
 void update_picture(uint8_t* newPicture)
 {
-    for (uint32_t i = 0; i < 192 / 4; ++i)
+    GPIOD->BSRR |= GPIO_BSRR_BS5;
+    
+    for (uint32_t i = 0; i < 192; i += 3)
     {
-        // I am very sure
-        ((uint32_t*) imageBuffer)[i] = ((uint32_t*) newPicture)[i];
+        imageBuffer[i / 3].b = newPicture[i];
+        imageBuffer[i / 3].g = newPicture[i + 1];
+        imageBuffer[i / 3].r = newPicture[i + 2];
     }
 }

@@ -117,8 +117,6 @@ void USART1_IRQHandler()
 	{
 		bufferPosition = 0;
 
-		bufferFullFlag = 0;
-
 		USART1->ICR |= USART_ICR_CMCF;
 
 		uint32_t dummy = USART1->RDR;
@@ -133,7 +131,6 @@ void USART1_IRQHandler()
 		if (bufferPosition == 8 * 8 * 3)
 		{
 			bufferFullFlag = 1;
-
 			// Avoid bad things
 			bufferPosition = 0;
 		}
