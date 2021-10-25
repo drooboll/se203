@@ -54,34 +54,39 @@ void matrix_init()
 
     // Should be reset already
     RST(HIGH);
+
+    for (uint32_t i = 0; i < 8 * 8; ++i)
+    {
+        imageBuffer[i] = (&_binary_image_raw_start)[i];
+    }
 }
 
-static void RST(pinValue x)
+static inline void RST(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
 }
 
-static void SB(pinValue x)
+static inline void SB(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
 }
 
-static void LAT(pinValue x)
+static inline void LAT(pinValue x)
 {
     GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-static void SCK(pinValue x)
+static inline void SCK(pinValue x)
 {
     GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
 }
 
-static void SDA(pinValue x)
+static inline void SDA(pinValue x)
 {
-    GPIOA->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOA->BSRR |= (x > LOW ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
-static void ROW(uint32_t addr, pinValue x)
+static inline void ROW(uint32_t addr, pinValue x)
 {
     switch (addr)
     {
@@ -128,11 +133,9 @@ static void SCK_pulse()
 static void LAT_pulse()
 {
     LAT(HIGH);
-    // At least 25ns here
     asm("nop");
     asm("nop");
     LAT(LOW);
-    // At least 25ns here
     asm("nop");
     asm("nop");
     LAT(HIGH);
@@ -151,24 +154,24 @@ static void send_byte(uint8_t val, int bank)
 
     for (uint32_t i = 0; i < 8; ++i)
     {
-        SDA((val & (1 << (7 - i))) >> (7 - i));
+        SDA(val & (1 << (7 - i)));
         SCK_pulse();
     }
 }
 
-static void set_row(uint8_t row, const rgb_color* value)
+static inline void set_row(uint8_t row, const rgb_color* value)
 {
     for (uint32_t i = 0; i < 8; ++i)
     {
-        send_byte(value[i].b, 1);
-        send_byte(value[i].g, 1);
-        send_byte(value[i].r, 1);
+        send_byte(value[7-i].b, 1);
+        send_byte(value[7-i].g, 1);
+        send_byte(value[7-i].r, 1);
     }
 
     deactivate_rows();
 
     // M54564 deactivate time up to 5us (avoid interleaving)
-    for (uint32_t i = 0; i < 100; ++i)
+    for (volatile uint32_t i = 0; i < 100; ++i)
     {
         asm("nop");
     }
@@ -176,22 +179,24 @@ static void set_row(uint8_t row, const rgb_color* value)
     LAT_pulse(); 
     
     ROW(row, HIGH);
-
-    for (uint32_t i = 0; i < 2 * 100; ++i)
-    {
-        asm("nop");
-    }   
 }
 
 void show_picture()
 {
     for (uint32_t row = 0; row < 8; ++row)
     {
-        set_row(row, &_binary_image_raw_start + row * 8);
+        set_row(row, imageBuffer + row * 8);
     }
 }
 
-void test_matrix()
+void update_picture(uint8_t* newPicture)
 {
-    show_picture();
+    GPIOD->BSRR |= GPIO_BSRR_BS5;
+    
+    for (uint32_t i = 0; i < 192; i += 3)
+    {
+        imageBuffer[i / 3].b = newPicture[i];
+        imageBuffer[i / 3].g = newPicture[i + 1];
+        imageBuffer[i / 3].r = newPicture[i + 2];
+    }
 }
