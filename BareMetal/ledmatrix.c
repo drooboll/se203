@@ -187,12 +187,17 @@ void show_picture()
     {
         set_row(row, imageBuffer + row * 8);
     }
+
+    for (volatile uint32_t i = 0; i < 100; ++i)
+    {
+        asm("nop");
+    }
+
+    deactivate_rows();
 }
 
 void update_picture(uint8_t* newPicture)
 {
-    GPIOD->BSRR |= GPIO_BSRR_BS5;
-    
     for (uint32_t i = 0; i < 192; i += 3)
     {
         imageBuffer[i / 3].b = newPicture[i];

@@ -111,6 +111,7 @@ void uart_sum(size_t count)
 
 void USART1_IRQHandler()
 {
+	GPIOD->BSRR |= GPIO_BSRR_BS4; 
 	uint32_t isr = USART1->ISR;
 
 	if (isr & USART_ISR_CMF)
@@ -119,21 +120,30 @@ void USART1_IRQHandler()
 
 		USART1->ICR |= USART_ICR_CMCF;
 
-		uint32_t dummy = USART1->RDR;
+		uint16_t dummy = USART1->RDR;
+
+		GPIOD->BSRR |= GPIO_BSRR_BR4; 
 
 		return;
 	}
 
 	if (isr & USART_ISR_RXNE)
 	{
-		uartBuffer[bufferPosition++] = (uint8_t) USART1->RDR;
+		uint8_t data = (uint8_t) USART1->RDR;
+
+		uartBuffer[bufferPosition++] = data;
 
 		if (bufferPosition == 8 * 8 * 3)
 		{
-			bufferFullFlag = 1;
-			// Avoid bad things
+			if (uart_callback != NULL)
+			{
+				uart_callback(uartBuffer);
+			}			
+
 			bufferPosition = 0;
 		}
+
+		GPIOD->BSRR |= GPIO_BSRR_BR4; 
 
 		return;
 	}
@@ -145,12 +155,7 @@ void USART1_IRQHandler()
 	}
 }
 
-uint32_t uart_buffer_full()
+void uart_set_callback(void (*c)(volatile uint8_t*))
 {
-	return bufferFullFlag;
-}
-
-uint32_t uart_buffer_full_reset()
-{
-	bufferFullFlag = 0;
+	uart_callback = c;
 }
