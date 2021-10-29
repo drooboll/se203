@@ -188,7 +188,7 @@ void show_picture()
         set_row(row, imageBuffer + row * 8);
     }
 
-    for (volatile uint32_t i = 0; i < 100; ++i)
+    for (volatile uint32_t i = 0; i < 800; ++i)
     {
         asm("nop");
     }

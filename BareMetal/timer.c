@@ -3,11 +3,10 @@
 void timer_init(uint32_t ms)
 {
     RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN;
-    TIM2->CR1 |= 0b10 << TIM_CR1_CKD_Pos;
     TIM2->SR = 0;
     TIM2->CNT = 0;
-    TIM2->PSC = F_CPU / 1000 / 4;
-    TIM2->ARR = ms;
+    TIM2->PSC = ms;
+    TIM2->ARR = F_CPU / ms / 250;
     TIM2->DIER |= TIM_DIER_UIE;
     
     NVIC_EnableIRQ(TIM2_IRQn);

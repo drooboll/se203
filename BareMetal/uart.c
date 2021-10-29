@@ -111,7 +111,6 @@ void uart_sum(size_t count)
 
 void USART1_IRQHandler()
 {
-	GPIOD->BSRR |= GPIO_BSRR_BS4; 
 	uint32_t isr = USART1->ISR;
 
 	if (isr & USART_ISR_CMF)
@@ -121,8 +120,6 @@ void USART1_IRQHandler()
 		USART1->ICR |= USART_ICR_CMCF;
 
 		uint16_t dummy = USART1->RDR;
-
-		GPIOD->BSRR |= GPIO_BSRR_BR4; 
 
 		return;
 	}
@@ -142,8 +139,6 @@ void USART1_IRQHandler()
 
 			bufferPosition = 0;
 		}
-
-		GPIOD->BSRR |= GPIO_BSRR_BR4; 
 
 		return;
 	}

@@ -10,11 +10,6 @@
 
 int main()
 {
-    RCC->AHB2ENR |= RCC_AHB2ENR_GPIODEN;
-    GPIOD->MODER &= ~(0b11 << GPIO_MODER_MODE5_Pos | 0b11 << GPIO_MODER_MODE4_Pos);
-    GPIOD->MODER |= (0b01 << GPIO_MODER_MODE5_Pos | 0b01 << GPIO_MODER_MODE4_Pos);
-    GPIOD->OSPEEDR |= (0b11 << GPIO_OSPEEDR_OSPEED5_Pos | 0b11 << GPIO_OSPEEDR_OSPEED4_Pos);
-
     clocks_init();
     matrix_init();
     irq_init();
