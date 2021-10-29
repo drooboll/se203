@@ -120,7 +120,6 @@ void USART1_IRQHandler()
 		USART1->ICR |= USART_ICR_CMCF;
 
 		uint16_t dummy = USART1->RDR;
-
 		return;
 	}
 
@@ -138,7 +137,7 @@ void USART1_IRQHandler()
 			}			
 
 			bufferPosition = 0;
-		}
+		} 
 
 		return;
 	}

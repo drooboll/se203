@@ -73,17 +73,20 @@ static inline void SB(pinValue x)
 
 static inline void LAT(pinValue x)
 {
-    GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOC->BSRR |= (x == HIGH ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4);
+    GPIOD->BSRR |= (x == HIGH ? GPIO_BSRR_BS5 : GPIO_BSRR_BR5); 
 }
 
 static inline void SCK(pinValue x)
 {
-    GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1); 
+    GPIOB->BSRR |= (x == HIGH ? GPIO_BSRR_BS1 : GPIO_BSRR_BR1);
+    GPIOD->BSRR |= (x == HIGH ? GPIO_BSRR_BS3 : GPIO_BSRR_BR3); 
 }
 
 static inline void SDA(pinValue x)
 {
-    GPIOA->BSRR |= (x > LOW ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
+    GPIOA->BSRR |= (x > LOW ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4);
+    GPIOD->BSRR |= (x > LOW ? GPIO_BSRR_BS4 : GPIO_BSRR_BR4); 
 }
 
 static inline void ROW(uint32_t addr, pinValue x)

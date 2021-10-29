@@ -122,5 +122,5 @@ void* __attribute__ ((section (".irq_handlers"))) vector_table[] =
 
 void irq_init()
 {
-    SCB->VTOR = (uint32_t) vector_table | 1 << SCB_VTOR_TBLOFF_Pos;
+    SCB->VTOR = (uint32_t) vector_table | 1 << 29;
 }
