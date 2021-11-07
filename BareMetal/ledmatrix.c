@@ -1,4 +1,5 @@
 #include "ledmatrix.h"
+#include <memory.h>
 
 void matrix_init()
 {
@@ -55,10 +56,8 @@ void matrix_init()
     // Should be reset already
     RST(HIGH);
 
-    for (uint32_t i = 0; i < 8 * 8; ++i)
-    {
-        imageBuffer[i] = (&_binary_image_raw_start)[i];
-    }
+    // Set default picture
+    memcpy((void*) imageBuffer, (void*) &_binary_image_raw_start, sizeof(imageBuffer));
 }
 
 static inline void RST(pinValue x)
@@ -198,10 +197,5 @@ void show_picture()
 
 void update_picture(uint8_t* newPicture)
 {
-    for (uint32_t i = 0; i < 192; i += 3)
-    {
-        imageBuffer[i / 3].b = newPicture[i];
-        imageBuffer[i / 3].g = newPicture[i + 1];
-        imageBuffer[i / 3].r = newPicture[i + 2];
-    }
+    memcpy((void*) imageBuffer, (void*) newPicture, sizeof(imageBuffer));
 }
