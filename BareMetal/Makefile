@@ -8,7 +8,6 @@ EXE = main
 SOURCES = $(wildcard *.c)
 ASMSOURCES = $(wildcard *.s)
 OBJECTS = $(patsubst %.c, %.o, $(SOURCES)) $(patsubst %.s, %.o, $(ASMSOURCES))
-PREBUILT = clocks.o
 DEPS = $(patsubst %.c, %.dep, $(SOURCES))
 DIRS = -I CMSIS/Device/ST/STM32L4xx/Include -I CMSIS/Include
 
@@ -22,8 +21,7 @@ LIBS = -lm
 .PHONY: all debug gdbserver
 all: $(EXE)
 
-$(EXE): $(OBJECTS) $(PREBUILT) image.o
-	@echo $^
+$(EXE): $(OBJECTS) image.o
 	$(LD) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 %.o : %.c
@@ -48,4 +46,5 @@ debug:
 clean:
 	rm -f $(DEPS)
 	rm -f $(OBJECTS)
+	rm -f image.o
 	rm -f $(EXE)
