@@ -14,7 +14,7 @@ int main()
     matrix_init();
     irq_init();
     button_init();
-    timer_init(10);
+    timer_init(5);
     timer_set_callback(show_picture);
 
     uart_init(38400);
