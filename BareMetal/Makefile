@@ -46,4 +46,5 @@ debug:
 clean:
 	rm -f $(DEPS)
 	rm -f $(OBJECTS)
+	rm -f image.o
 	rm -f $(EXE)
