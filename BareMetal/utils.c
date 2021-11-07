@@ -45,3 +45,91 @@ void itoa(char* dst, uint32_t x)
 
 	strrev(dst);
 }
+
+void* memcpy(void* dst, const void* src, size_t n)
+{
+    if (src == dst)
+    {
+        return (void*) dst;
+    }
+
+    size_t index = 0;
+
+    if (n != 0 && n > 16)
+    {
+        for (; index < n >> 2; ++index)
+        {
+            *((uint32_t*) dst + index) = *((uint32_t*) src + index);
+        }
+
+        index *= 4;
+    }
+
+    for (; index < n; ++index)
+    {
+        *((char*) dst + index) = *((char*) src + index);
+    }
+
+    return (void*) dst;
+}
+
+void* memmove(void* dst, const void* src, size_t n)
+{
+    if (dst == src)
+    {
+        return dst;
+    }
+
+    if (dst > src)
+    {
+        if (src + n > dst)
+        {
+            size_t diff = src + n - dst;
+
+            memcpy(dst + diff, src + diff, n - diff);
+            return memcpy(dst, src, diff);
+        }
+    }
+    else
+    {
+        if (dst + n > src)
+        {
+            size_t diff = src + n - dst;
+
+            void* result = memcpy(dst, src, n - diff);
+            memcpy(dst + n - diff, src + n - diff, diff);
+
+            return result;
+        }
+    }
+
+    return memcpy(dst, src, n);
+}
+
+void* memset(void* dst, int c, size_t n)
+{
+    // Use lower byte on ARM
+    uint8_t pattern = (uint8_t) c;
+
+    size_t index = 0;
+
+    if (n != 0 && n > 16)
+    {
+        uint32_t pattern32 = pattern << 24 | pattern << 16 | pattern << 8 | pattern;
+
+        for (; index < n >> 2; ++index)
+        {
+            *((uint32_t*) dst + index) = pattern32;
+        }
+
+        index *= 4;
+    }
+
+    for (; index < n; ++index)
+    {
+        *((uint8_t*) dst + index) = pattern;
+    }
+
+    return dst;
+}
+
