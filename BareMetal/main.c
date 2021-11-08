@@ -14,7 +14,7 @@ void callback_specific()
 {
     show_picture();
 
-    if(step == 50)
+    if(step == 100)
     {
         life_step();
         step = 0;
