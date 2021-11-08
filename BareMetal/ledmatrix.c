@@ -202,3 +202,57 @@ void update_picture(uint8_t* newPicture)
 {
     memcpy((void*) imageBuffer, (void*) newPicture, sizeof(imageBuffer));
 }
+
+void start_life()
+{
+    memset(imageBuffer, 0, 192);
+
+    // Add a glider
+    imageBuffer[1].g = 254;
+    imageBuffer[8 + 2].g = 254;
+    imageBuffer[16].g = 254;
+    imageBuffer[16 + 1].g = 254;
+    imageBuffer[16 + 2].g = 254;
+}
+
+uint32_t test_color(uint8_t i, uint8_t j)
+{
+    return imageBuffer[i + j * 8].b << 16 | imageBuffer[i + j * 8].g << 8 | imageBuffer[i + j * 8].r;
+}
+
+void life_step()
+{
+    for (uint8_t i = 0; i < 8; ++i)
+    {
+        for (uint8_t j = 0; j < 8; ++j)
+        {
+            uint32_t topLeft = test_color((i + 7) % 8, (j + 7) % 8) == 0 ? 0 : 1;
+            uint32_t left = test_color((i + 7) % 8, j) == 0 ? 0 : 1;
+            uint32_t bottomLeft = test_color((i + 7) % 8, (j + 1) % 8) == 0 ? 0 : 1;
+
+            uint32_t top = test_color(i, (j + 7) % 8) == 0 ? 0 : 1;
+            uint32_t bottom = test_color(i, (j + 1) % 8) == 0 ? 0 : 1;
+
+            uint32_t topRight = test_color((i + 1) % 8, (j + 7) % 8) == 0 ? 0 : 1;
+            uint32_t right = test_color((i + 1) % 8, j) == 0 ? 0 : 1;
+            uint32_t bottomRight = test_color((i + 1) % 8, (j + 1) % 8) == 0 ? 0 : 1;
+
+            uint32_t num = topLeft + left + bottomLeft + top + bottom + topRight + right + bottomRight;
+                
+            if (test_color(i, j))
+            {
+                if (num > 3 || num < 2)
+                {
+                    imageBuffer[i + j * 8].g = 0; 
+                }
+            }
+            else
+            {
+                if (num == 3)
+                {
+                    imageBuffer[i + j * 8].g = 254; 
+                }
+            }
+        }
+    }
+}

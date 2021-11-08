@@ -43,4 +43,8 @@ void show_picture();
 
 void update_picture();
 
+void start_life();
+
+void life_step();
+
 #endif
