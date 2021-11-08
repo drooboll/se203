@@ -183,20 +183,20 @@ static inline void set_row(uint8_t row, const rgb_color* value)
     ROW(row, HIGH);
 }
 
+static volatile uint8_t currentRow = 0;
+
 void show_picture()
 {
-    for (uint32_t row = 0; row < 8; ++row)
-    {
-        set_row(row, imageBuffer + row * 8);
-    }
-
-    for (volatile uint32_t i = 0; i < 800; ++i)
-    {
-        asm("nop");
-    }
-
     deactivate_rows();
+
+    set_row(currentRow, imageBuffer + currentRow * 8);
+
+    currentRow++;
+
+    currentRow %= 8;
 }
+
+
 
 void update_picture(uint8_t* newPicture)
 {

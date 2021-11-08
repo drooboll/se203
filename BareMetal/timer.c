@@ -6,7 +6,7 @@ void timer_init(uint32_t ms)
     TIM2->SR = 0;
     TIM2->CNT = 0;
     TIM2->PSC = ms;
-    TIM2->ARR = F_CPU / ms / 250;
+    TIM2->ARR = F_CPU / 1000;
     TIM2->DIER |= TIM_DIER_UIE;
     
     NVIC_EnableIRQ(TIM2_IRQn);

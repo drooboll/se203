@@ -29,7 +29,7 @@ int main()
     matrix_init();
     irq_init();
     button_init();
-    timer_init(5);
+    timer_init(1);
     timer_set_callback(callback_specific);
 
     uart_init(38400);
