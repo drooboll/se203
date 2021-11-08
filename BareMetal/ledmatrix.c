@@ -56,6 +56,14 @@ void matrix_init()
     // Should be reset already
     RST(HIGH);
 
+    // Set BANK0
+    for (uint8_t i = 0; i < 6; ++i)
+    {
+        send_byte(0xff, 0);
+    }
+
+    LAT_pulse();
+
     // Set default picture
     memcpy((void*) imageBuffer, (void*) &_binary_image_raw_start, sizeof(imageBuffer));
 }
