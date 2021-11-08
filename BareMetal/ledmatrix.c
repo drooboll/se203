@@ -207,7 +207,6 @@ void start_life()
 {
     memset(imageBuffer, 0, 192);
 
-    // Add a glider
     imageBuffer[1].g = 254;
     imageBuffer[8 + 2].g = 254;
     imageBuffer[16].g = 254;
@@ -222,6 +221,10 @@ uint32_t test_color(uint8_t i, uint8_t j)
 
 void life_step()
 {
+    rgb_color localBuffer[64] = {(0)};
+
+    memcpy(localBuffer, imageBuffer, sizeof(imageBuffer));
+
     for (uint8_t i = 0; i < 8; ++i)
     {
         for (uint8_t j = 0; j < 8; ++j)
@@ -243,16 +246,18 @@ void life_step()
             {
                 if (num > 3 || num < 2)
                 {
-                    imageBuffer[i + j * 8].g = 0; 
+                    localBuffer[i + j * 8].g = 0; 
                 }
             }
             else
             {
                 if (num == 3)
                 {
-                    imageBuffer[i + j * 8].g = 254; 
+                    localBuffer[i + j * 8].g = 254; 
                 }
             }
         }
     }
+
+    memcpy(imageBuffer, localBuffer, sizeof(localBuffer));
 }
